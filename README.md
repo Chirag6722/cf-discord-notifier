@@ -45,47 +45,6 @@ cf-discord-notifier/
 
 ---
 
-## ⚙️ Installation
-
-Clone the repository:
-
-```bash
-git clone https://github.com/Chirag6722/cf-discord-notifier.git
-```
-
-Move into the project folder:
-
-```bash
-cd cf-discord-notifier
-```
-
-Install dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
----
-
-## 🔑 Discord Webhook Setup
-
-1. Open your Discord Server.
-2. Go to **Server Settings → Integrations → Webhooks**.
-3. Create a new webhook.
-4. Copy the webhook URL.
-
-For security, store it as a GitHub Secret or an environment variable instead of hardcoding it in your code.
-
----
-
-## ▶️ Run Locally
-
-```bash
-python main.py
-```
-
----
-
 ## 🤖 GitHub Actions
 
 The workflow automatically runs every morning and:
@@ -99,45 +58,6 @@ You can also trigger the workflow manually from the **Actions** tab in GitHub.
 
 ---
 
-## 📸 Sample Discord Notification
 
-```
-🚀 New Codeforces Contest!
-
-Codeforces Round (Div. 3)
-
-https://codeforces.com/contests
-```
-
----
-
-## 🔮 Future Improvements
-
-- Contest start time in IST
-- Countdown until contest starts
-- Beautiful Discord embeds
-- Support for Div.2, Educational and Global Rounds
-- Docker support
-- Full Discord Bot version
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome!
-
-Feel free to fork the repository, improve the project, and create a pull request.
-
----
-
-## 📜 License
-
-This project is licensed under the MIT License.
-
----
-
-## 👨‍💻 Author
-
-**Chirag Honnyal**
 
 GitHub: https://github.com/Chirag6722
