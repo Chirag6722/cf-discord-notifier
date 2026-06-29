@@ -6,7 +6,7 @@ import os
 CF_API = "https://codeforces.com/api/contest.list"
 
 # Local testing
-DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1519930518345482285/I2NnfP0SsKSL6R69tGTEaRpx-cjYBzg6ZqeoDswRFfxQmO5pLFZsgbnwWbWcFMLASnZu"
+DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1519927236084371547/NS0GqKUdTDc6zTb35QQ1fXk8qDgaZTy1lvjbFBKDr3OfHG5ZrHasSowLl2gIO1MIQ7yy"
 
 LAST_FILE = "last_contest.txt"
 
