@@ -8,6 +8,7 @@ CF_API = "https://codeforces.com/api/contest.list"
 DISCORD_WEBHOOK = os.environ["DISCORD_WEBHOOK"]
 
 LAST_FILE = "last_contest.txt"
+LAST_REG_FILE = "last_registration.txt"
 
 # ----------------------------------------
 
@@ -44,57 +45,109 @@ if latest is None:
 
 contest_id = str(latest["id"])
 contest_name = latest["name"]
+relative_time = latest.get("relativeTimeSeconds", None)  # negative = seconds until start
 
 print("Found Contest:")
 print(contest_name)
 
-# Read last contest
+# ---- Read last announced contest ----
 if os.path.exists(LAST_FILE):
     with open(LAST_FILE, "r") as f:
         last = f.read().strip()
 else:
     last = ""
 
-# Already notified?
-if contest_id == last:
-    print("Already notified.")
-    exit()
+# ---- Read last registration reminder ----
+if os.path.exists(LAST_REG_FILE):
+    with open(LAST_REG_FILE, "r") as f:
+        last_reg = f.read().strip()
+else:
+    last_reg = ""
 
-# Discord Embed
-payload = {
-    "embeds": [
-        {
-            "title": "🚀 New Codeforces Contest!",
-            "description": f"**{contest_name}**",
-            "color": 3447003,
-            "fields": [
-                {
-                    "name": "Contest ID",
-                    "value": contest_id,
-                    "inline": True
-                },
-                {
-                    "name": "Contest Page",
-                    "value": "https://codeforces.com/contests",
-                    "inline": False
+# ---- 1. ANNOUNCEMENT NOTIFICATION ----
+if contest_id != last:
+    payload = {
+        "embeds": [
+            {
+                "title": "🚀 New Codeforces Contest Announced!",
+                "description": f"**{contest_name}**",
+                "color": 3447003,  # Blue
+                "fields": [
+                    {
+                        "name": "Contest ID",
+                        "value": contest_id,
+                        "inline": True
+                    },
+                    {
+                        "name": "Contest Page",
+                        "value": "[Click here to view](https://codeforces.com/contests)",
+                        "inline": False
+                    }
+                ],
+                "footer": {
+                    "text": "Codeforces Notifier • Announcement"
                 }
-            ],
-            "footer": {
-                "text": "Codeforces Notifier"
             }
-        }
-    ]
-}
+        ]
+    }
 
-r = requests.post(DISCORD_WEBHOOK, json=payload)
+    r = requests.post(DISCORD_WEBHOOK, json=payload)
 
-if r.status_code == 204:
-
-    print("Discord message sent!")
-
-    with open(LAST_FILE, "w") as f:
-        f.write(contest_id)
+    if r.status_code == 204:
+        print("Announcement sent to Discord!")
+        with open(LAST_FILE, "w") as f:
+            f.write(contest_id)
+    else:
+        print("Error sending announcement")
+        print(r.text)
 
 else:
-    print("Error sending Discord message")
-    print(r.text)
+    print("Announcement already sent.")
+
+# ---- 2. REGISTRATION OPEN NOTIFICATION (within 24 hours) ----
+if relative_time is not None:
+    seconds_until_start = -relative_time  # positive = time remaining
+    hours_until_start = seconds_until_start / 3600
+
+    print(f"Contest starts in {hours_until_start:.1f} hours")
+
+    if hours_until_start <= 24 and contest_id != last_reg:
+        payload_reg = {
+            "embeds": [
+                {
+                    "title": "📋 Registration is Open!",
+                    "description": f"**{contest_name}** starts in less than 24 hours!\nRegister now before it's too late!",
+                    "color": 15844367,  # Orange/Gold
+                    "fields": [
+                        {
+                            "name": "⏰ Starts In",
+                            "value": f"{hours_until_start:.1f} hours",
+                            "inline": True
+                        },
+                        {
+                            "name": "🔗 Register Now",
+                            "value": "[Click here to register](https://codeforces.com/contests)",
+                            "inline": False
+                        }
+                    ],
+                    "footer": {
+                        "text": "Codeforces Notifier • Registration Reminder"
+                    }
+                }
+            ]
+        }
+
+        r2 = requests.post(DISCORD_WEBHOOK, json=payload_reg)
+
+        if r2.status_code == 204:
+            print("Registration reminder sent to Discord!")
+            with open(LAST_REG_FILE, "w") as f:
+                f.write(contest_id)
+        else:
+            print("Error sending registration reminder")
+            print(r2.text)
+
+    elif hours_until_start <= 24:
+        print("Registration reminder already sent.")
+    else:
+        print(f"Registration reminder will fire when contest is within 24 hours.")
