@@ -129,7 +129,7 @@ try:
 
         print(f"Contest starts in {hours_until_start:.1f} hours")
 
-        if hours_until_start <= 24 and contest_id != last_reg:
+        if hours_until_start <= 200 and contest_id != last_reg:  # TEMP: 200h for testing, change back to 24
             payload_reg = {
                 "content": "@everyone",
                 "embeds": [
